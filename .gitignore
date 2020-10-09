@@ -48,3 +48,9 @@ MANIFEST
 
 # Per-project virtualenvs
 .venv*/
+
+# IDE settings
+.vscode/
+
+# Jupyter Notebooks
+notebooks/
