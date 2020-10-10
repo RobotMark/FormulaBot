@@ -41,9 +41,8 @@ class Solution:
                                         operation
         """
 
-        #--------------------------------------------------------
-        # contracts on inputs
-        #--------------------------------------------------------
+        # begin contracts on inputs -----------------------------
+        
         if (type(parameters) != list):
             raise(ValueError) 
         
@@ -55,6 +54,8 @@ class Solution:
         
         if (operands_size < 4):
             raise(ValueError)
+            
+        # end contracts on inputs -------------------------------
 
         self.params_size = len(parameters)
         self.ops_size = len(parameters) + operations_size
@@ -85,15 +86,16 @@ class Solution:
                             ex.  values = {'X':100, 'Y', 200}
         """
 
-        #--------------------------------------------------------
-        # contracts on inputs
-        #--------------------------------------------------------
+        # begin contracts on inputs -----------------------------
+        
         if type(values) != dict:
             raise(ValueError)
         
         if len(values) != self.params_size:
             raise(ValueError)
 
+        # end contracts on inputs -------------------------------
+        
         # reset calc tape
         calc_tape = [None] * self.ops_size
 
@@ -239,11 +241,11 @@ class Population:
         retrieved from this class as well.
 
         Args:
-            population_size (int):      The number of solutions to initialize.
-            parameters (list<str>):     A list of the function inputs
-            operations_size (int):      How many operations to include in the solution
-            operands_size (int):        How many operands to include for each operator
-            epochs (int):               How many generations to use when training
+            population_size (int):      The number of solutions to initialize. population_size >= 10
+            parameters (list<str>):     A list of the function inputs. len(list) >= 1
+            operations_size (int):      How many operations to include in the solution. >= 2
+            operands_size (int):        How many operands to include for each operator. >=4
+            epochs (int):               How many generations to use when training. > 0
             crossover_rate (float):     A percentage of the solutions to use for creating child 
                                         solutions in each epoch
             mutation_rate (float):      A percentage of the solutions to mutate in each epoch
@@ -255,6 +257,43 @@ class Population:
             outputs (list):             A list of results to test the model against
         """
 
+        # begin contracts on inputs -----------------------------
+
+        if population_size < 10:
+            raise(ValueError) 
+        
+        if type(parameters) != list:
+            raise(ValueError)
+            
+        if len(parameters) < 1:
+            raise(ValueError)
+
+        if operations_size < 2:
+            raise(ValueError)
+
+        if operands_size < 4:
+            raise(ValueError)
+
+        if epochs < 1:
+            raise(ValueError)
+        
+        if crossover_rate <=0:
+            raise(ValueError)
+        
+        if mutation_rate < 0:
+            raise(ValueError)
+        
+        if kill_rate < 0:
+            raise(ValueError)
+
+        if len(inputs) != len(outputs):
+            raise(ValueError)
+
+        if len(inputs) == 0:
+            raise(ValueError)
+
+        # end contracts on inputs -------------------------------
+        
         self.pop_size = population_size
         self.parameters = parameters
         self.ops_size = operations_size
@@ -263,14 +302,7 @@ class Population:
         self.crossovers = int(population_size * crossover_rate)
         self.mutations = int(population_size * mutation_rate)
         self.kills = int(population_size * kill_rate)
-
-        if error_calc == 'mae':
-            self.fitness_calc = mean_absolute_error
-        elif error_calc == 'mse':
-            self.fitness_calc = mean_squared_error
-        else:
-            self.fitness_calc = mean_absolute_error
-        
+        self.fitness_calc = error_calc
         self.inputs = inputs
         self.outputs = outputs
         self.i = -1
@@ -286,10 +318,6 @@ class Population:
         self.update_scores()
 
 
-    def add_solution(self, s):
-        self.solutions.append(s)
-
-
     def get_best_score(self):
         return min(self.scores)
 
@@ -298,13 +326,13 @@ class Population:
         return self.scores.index(self.get_best_score())
 
 
-    def get_avg_score(self):
-        return sum(self.scores) / self.pop_size
-
-
     def get_best_solution(self):
         return self.solutions[self.scores.index(self.get_best_score())]
 
+
+    def get_avg_score(self):
+        return sum(self.scores) / self.pop_size
+        
 
     def update_score(self, idx):
         pred = [m for m in map(self.solutions[idx].compute, self.inputs)]

@@ -337,3 +337,163 @@ def test_Solution_compare_func():
     # check ops compare not matched
     s2 = Solution(['X','Y','Z'], 10, 10)
     assert s1.compare_operations(s2) == False
+
+def test_Population_init():
+
+    X = [{'X': 0.836261492, 'Y': 0.000102515},
+         {'X': 0.43432574700000004, 'Y': 0.00017887}]
+    Y = [100., 200.]
+
+    #population_size < 10
+    with pytest.raises(ValueError):
+        Population(population_size=9, 
+               parameters=['X','Y'], 
+               operations_size=10, 
+               operands_size=4, 
+               epochs=10, 
+               crossover_rate=0.45, 
+               mutation_rate=0.10, 
+               kill_rate=0.20,
+               error_calc='mae',
+               inputs=X, 
+               outputs=Y)
+
+    # parameters not a list
+    with pytest.raises(ValueError):
+        Population(population_size=10, 
+               parameters=2, 
+               operations_size=10, 
+               operands_size=4, 
+               epochs=10, 
+               crossover_rate=0.45, 
+               mutation_rate=0.10, 
+               kill_rate=0.20,
+               error_calc='mae',
+               inputs=X, 
+               outputs=Y)
+
+    # parameters < 1
+    with pytest.raises(ValueError):
+        Population(population_size=10, 
+               parameters=[], 
+               operations_size=10, 
+               operands_size=4, 
+               epochs=10, 
+               crossover_rate=0.45, 
+               mutation_rate=0.10, 
+               kill_rate=0.20,
+               error_calc='mae',
+               inputs=X, 
+               outputs=Y)
+
+    # operations size < 2
+    with pytest.raises(ValueError):
+        Population(population_size=10, 
+               parameters=['X','Y'], 
+               operations_size=1, 
+               operands_size=4, 
+               epochs=10, 
+               crossover_rate=0.45, 
+               mutation_rate=0.10, 
+               kill_rate=0.20,
+               error_calc='mae',
+               inputs=X, 
+               outputs=Y)
+
+    # operands size < 4
+    with pytest.raises(ValueError):
+        Population(population_size=10, 
+               parameters=['X','Y'], 
+               operations_size=10, 
+               operands_size=1, 
+               epochs=10, 
+               crossover_rate=0.45, 
+               mutation_rate=0.10, 
+               kill_rate=0.20,
+               error_calc='mae',
+               inputs=X, 
+               outputs=Y)
+
+    # epochs < 1
+    with pytest.raises(ValueError):
+        Population(population_size=10, 
+               parameters=['X','Y'], 
+               operations_size=10, 
+               operands_size=10, 
+               epochs=0, 
+               crossover_rate=0.45, 
+               mutation_rate=0.10, 
+               kill_rate=0.20,
+               error_calc='mae',
+               inputs=X, 
+               outputs=Y)
+
+    # crossover rate <= 0
+    with pytest.raises(ValueError):
+        Population(population_size=10, 
+               parameters=['X','Y'], 
+               operations_size=10, 
+               operands_size=10, 
+               epochs=10, 
+               crossover_rate=0., 
+               mutation_rate=0.10, 
+               kill_rate=0.20,
+               error_calc='mae',
+               inputs=X, 
+               outputs=Y)
+
+    # mutation rate < 0
+    with pytest.raises(ValueError):
+        Population(population_size=10, 
+               parameters=['X','Y'], 
+               operations_size=10, 
+               operands_size=10, 
+               epochs=10, 
+               crossover_rate=0.5, 
+               mutation_rate=-0.10, 
+               kill_rate=0.20,
+               error_calc='mae',
+               inputs=X, 
+               outputs=Y)
+
+    # kill rate < 0
+    with pytest.raises(ValueError):
+        Population(population_size=10, 
+               parameters=['X','Y'], 
+               operations_size=10, 
+               operands_size=10, 
+               epochs=10, 
+               crossover_rate=0., 
+               mutation_rate=0., 
+               kill_rate=-0.20,
+               error_calc='mae',
+               inputs=X, 
+               outputs=Y)
+
+    # inputs len != ouputs len
+    with pytest.raises(ValueError):
+        Population(population_size=10, 
+               parameters=['X','Y'], 
+               operations_size=10, 
+               operands_size=10, 
+               epochs=10, 
+               crossover_rate=0., 
+               mutation_rate=0., 
+               kill_rate=-0.20,
+               error_calc='mae',
+               inputs=[{'X':100., 'Y':200.}, {'X':100., 'Y':200.}],
+               outputs=[100.])
+
+    # inputs len != ouputs len
+    with pytest.raises(ValueError):
+        Population(population_size=10, 
+               parameters=['X','Y'], 
+               operations_size=10, 
+               operands_size=10, 
+               epochs=10, 
+               crossover_rate=0., 
+               mutation_rate=0., 
+               kill_rate=-0.20,
+               error_calc='mae',
+               inputs=[],
+               outputs=[100.])
