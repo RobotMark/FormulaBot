@@ -225,6 +225,7 @@ class Population:
                                         and testing
             outputs (list):             A list of results to test the model against
         """
+        
         self.pop_size = population_size
         self.parameters = parameters
         self.ops_size = operations_size
