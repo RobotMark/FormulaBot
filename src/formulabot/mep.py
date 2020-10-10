@@ -8,7 +8,6 @@ from tqdm import tqdm
 #from jupyterplot import ProgressPlot
 
 
-
 class Solution:
     
     
@@ -87,7 +86,6 @@ class Solution:
 
             # handle operations
             else:
-                #print(self.ops[i][1][0],  '>> ', self.ops[i][1][1])
                 if self.Operator(self.ops[i][0]).name == 'ADD':
                     calc_tape[i] = calc_tape[self.ops[i][1][0]] + calc_tape[self.ops[i][1][1]]
                 elif self.Operator(self.ops[i][0]).name == 'MINUS':
@@ -125,6 +123,7 @@ class Solution:
                     else:
                         calc_tape[i] = calc_tape[self.ops[i][1][3]]
 
+        # return the value in the last row of the calc tape
         return(calc_tape[i])
 
 
@@ -225,7 +224,7 @@ class Population:
                                         and testing
             outputs (list):             A list of results to test the model against
         """
-        
+
         self.pop_size = population_size
         self.parameters = parameters
         self.ops_size = operations_size
