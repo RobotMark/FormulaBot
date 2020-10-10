@@ -231,6 +231,7 @@ def test_Solution_compute_trig():
     x = {'X':0, 'Y':1, 'Z':90}  # test values that cant be combines unintentionally and have correct outcome
     assert round(s.compute(x),4) == 1.5574
 
+
 def test_Solution_compute_conditionals():
 
     s = Solution(['X','Y','Z'], 5, 5)
