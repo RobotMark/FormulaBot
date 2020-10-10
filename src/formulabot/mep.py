@@ -75,6 +75,25 @@ class Solution:
 
 
     def compute(self, values):
+        """ Computes the result from the solution with the provided inputs
+
+        Args:
+
+            values (dict):  A dictionary with keys representing the variable names
+                            and the values as the inputs into the model
+
+                            ex.  values = {'X':100, 'Y', 200}
+        """
+
+        #--------------------------------------------------------
+        # contracts on inputs
+        #--------------------------------------------------------
+        if type(values) != dict:
+            raise(ValueError)
+        
+        if len(values) != self.params_size:
+            raise(ValueError)
+
         # reset calc tape
         calc_tape = [None] * self.ops_size
 
@@ -127,7 +146,9 @@ class Solution:
         return(calc_tape[i])
 
 
-    def print_pretty(self):
+    def print_solution_diagnostics(self):
+        """ prints out solution encoding for diagnostics and troubleshooting """
+
         print('--------------------------------------------------------------------')
         for idx, x in enumerate(self.ops[:self.params_size]):
             print(f'{idx:4d}. {x[0]:10}')
@@ -181,21 +202,30 @@ class Solution:
         new_operands = copy.deepcopy(self.ops[row][1])
         new_operator = self.ops[row][0]
 
-        # randomly decide if operands should be modified
-        if bool(random.getrandbits(1)):            
+        action = random.randint(0,2)
+
+        # Decide if operands should be modified
+        if action == 0:            
             new_operands[random.randint(0,self.operands_size-1)] = random.randint(0,row-1)
 
-        # randomly decide if operands should be split and recombined
-        if bool(random.getrandbits(1)):
+        # Decide if operands should be split and recombined
+        if action == 1:
             ptr = random.randint(0,self.operands_size-1)
             new_operands = new_operands[ptr:] + new_operands[:ptr]
 
-        # randomly decide if changing operator should be modified
-        if bool(random.getrandbits(1)):
+        # Decide if changing operator should be modified
+        if action == 2:
             new_operator = random.randint(1, len(self.Operator))
             
         self.ops[row] = (new_operator, new_operands)
 
+    
+    def compare_operations(self, s):
+        for a, b in zip(self.ops, s.ops):
+            if a != b:
+                return False
+
+        return True
 
 class Population:
     

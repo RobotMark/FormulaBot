@@ -1,9 +1,6 @@
 import pytest
+import copy
 from formulabot.mep import Population, Solution
-
-__author__ = "Mark Maupin"
-__copyright__ = "Mark Maupin"
-__license__ = "mit"
 
 
 def test_Solution_init_params():
@@ -23,7 +20,6 @@ def test_Solution_init_params():
     # make sure at least 4 operands exist
     with pytest.raises(ValueError):
         Solution(['X'], 3, 0)
-
 
 def test_Solution_init():
 
@@ -50,8 +46,21 @@ def test_Solution_init():
         assert len([x for x in o[1] if 0 <= x < i+len(parms)]) == operands
 
         # make sure the Operator is 0 < x < len(Operator)
-        assert o[0] < len(Solution.Operator)
+        assert o[0] <= len(Solution.Operator)
 
+def test_Solution_compute_contracts():
+
+    s = Solution(['X','Y','Z'], 10, 10)
+
+    # make sure list object passed
+    with pytest.raises(ValueError):
+        s.compute(None)
+
+    with pytest.raises(ValueError):
+        s.compute({})
+
+    with pytest.raises(ValueError):
+        s.compute({'X'})
 
 def test_Solution_compute_basic_math():
 
@@ -161,7 +170,6 @@ def test_Solution_compute_basic_math():
     x = {'X':0, 'Y':3, 'Z':7}  # test values that cant be combines unintentionally and have correct outcome
     assert s.compute(x) == -3
 
-
 def test_Solution_compute_trig():
 
     s = Solution(['X','Y','Z'], 5, 4)
@@ -231,10 +239,9 @@ def test_Solution_compute_trig():
     x = {'X':0, 'Y':1, 'Z':90}  # test values that cant be combines unintentionally and have correct outcome
     assert round(s.compute(x),4) == 1.5574
 
-
 def test_Solution_compute_conditionals():
 
-    s = Solution(['X','Y','Z'], 5, 5)
+    s = Solution(['X','Y','Z'], 5, 4)
 
     # test if greater than
     s.ops = [('X', []),
@@ -313,3 +320,20 @@ def test_Solution_compute_conditionals():
 
     x = {'X':1, 'Y':3, 'Z':7}  # test values that cant be combines unintentionally and have correct outcome
     assert s.compute(x) == 1
+
+def test_Solution_mutate():
+
+    s1 = Solution(['X','Y','Z'], 100, 100)
+    s2 = copy.deepcopy(s1)
+    s2.mutate()
+    assert s1.compare_operations(s2) == False
+
+def test_Solution_compare_func():
+
+    # check that the ops compare is the same
+    s1 = Solution(['X','Y','Z'], 10, 10)
+    assert s1.compare_operations(s1) == True
+
+    # check ops compare not matched
+    s2 = Solution(['X','Y','Z'], 10, 10)
+    assert s1.compare_operations(s2) == False
