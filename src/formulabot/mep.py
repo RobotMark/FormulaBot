@@ -28,11 +28,35 @@ class Solution:
 
 
     def __init__(self, parameters, operations_size, operands_size):
+        """ The Solution is the encoded representation of a solution that is created by
+            the Population class.
+
+        The Solution is comprised of a list of tuples that are computation operations.  Each 
+        tuple in the Solution is comprised of 1. the Operator and 2. a list of operands. 
+
+        Args:
+
+            parameters (list<str>):     A list of the function inputs
+            operations_size (int):      The number of operations that can be performed in the Solution
+            operands_size (int):        The number of operands that the operator can perform on through
+                                        operation
         """
-        parameters:  a list of the function inputs
-        operations_size:  how many operations to include in the solution
-        operands_size:  how many operands to include for each operator
-        """
+
+        #--------------------------------------------------------
+        # contracts on inputs
+        #--------------------------------------------------------
+        if (type(parameters) != list):
+            raise(ValueError) 
+        
+        if (len(parameters) < 1):
+            raise(ValueError)
+        
+        if (operations_size < 3):
+            raise(ValueError)
+        
+        if (operands_size < 4):
+            raise(ValueError)
+
         self.params_size = len(parameters)
         self.ops_size = len(parameters) + operations_size
         self.ops = [(p,[]) for p in parameters]
@@ -114,6 +138,7 @@ class Solution:
         print('--------------------------------------------------------------------')
         print("LaTex: ", self.to_latex_string())
         print('--------------------------------------------------------------------')
+
 
     def to_latex_string(self):
         formulas = [None]*self.ops_size
