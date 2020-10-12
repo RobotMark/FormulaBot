@@ -1,11 +1,11 @@
 import random
 import math
 import copy
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from enum import Enum
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from tqdm import tqdm
-#from jupyterplot import ProgressPlot
+from jupyterplot import ProgressPlot
 
 
 class Solution:
@@ -308,10 +308,8 @@ class Population:
         self.i = -1
         self.solutions = []
         
-        with tqdm(total=self.pop_size, desc="Initialize Solutions") as pbar:
-            for _ in range(self.pop_size):
-                self.solutions.append(Solution(self.parameters, self.ops_size, self.operands_size))    
-                pbar.update(1)
+        for _ in range(self.pop_size):
+            self.solutions.append(Solution(self.parameters, self.ops_size, self.operands_size))    
 
         self.scores = [None] * self.pop_size
 
@@ -332,7 +330,7 @@ class Population:
 
     def get_avg_score(self):
         return sum(self.scores) / self.pop_size
-        
+
 
     def update_score(self, idx):
         pred = [m for m in map(self.solutions[idx].compute, self.inputs)]
@@ -340,17 +338,17 @@ class Population:
         return self.scores[idx]
 
 
-    def update_scores(self):
-        with tqdm(total=self.pop_size, desc="Initialize Scores   ") as pbar:    
-            for x in range(self.pop_size):
-                self.update_score(x)
-                pbar.update(1)
+    def update_scores(self): 
+        for x in range(self.pop_size):
+            self.update_score(x)
 
 
     def run_epochs(self, plot_nb=False):
-        #if plot_nb:
-        #    #pp = ProgressPlot(x_lim=[0, self.epochs], line_names=["Population Avg.", "Best Solution"])
-        #    #pp = ProgressPlot(x_lim=[0, self.epochs], line_names=["Best Solution"])
+        if plot_nb:
+
+            pp = ProgressPlot(plot_names=["Best Case", "Convergence"],
+                  x_lim=[0, self.epochs], 
+                  line_names=["Population Avg.", "Best Solution"] )
         
         with tqdm(total=self.epochs, desc="Epochs") as pbar:
             for _ in range(self.epochs):
@@ -360,21 +358,20 @@ class Population:
 
                 pbar.update(1)
 
-                #if plot_nb:
-                #    #pp.update([[self.get_avg_score(), self.get_best_score()]])
-                #    #pp.update([[self.get_best_score()]])
-        
+                if plot_nb:
+                    pp.update([[self.get_best_score(),self.get_best_score()],
+                               [self.get_avg_score(), self.get_best_score()]])
+
                 if len(set(self.scores)) == 1:
                     print("Convergence!")
                     break
 
-                #if round(self.get_best_score(), 6) == 0.0:
-                if self.get_best_score() == 0.0:
+                if round(self.get_best_score(), 7) == 0.0:
                     print("Optimal Solution Found!")
                     break
 
-        #if plot_nb:
-        #    pp.finalize()
+        if plot_nb:
+            pp.finalize()
 
 
     def get_rand_solution(self):
@@ -436,22 +433,14 @@ class Population:
             self.mutate_one()
 
 
-    # def plot_predictions(self, size=100):
-    #     result_cnt = size
-    #     fig, ax = plt.subplots()
+    def plot_predictions(self, solution, pred, act):
+        fig, ax = plt.subplots()
 
-    #     x = [x for x in range(result_cnt)]
-    #     y = [m for m in map(self.get_best_solution().compute, self.inputs[:result_cnt])]
-    #     ax.scatter(x, y, label='model', alpha=0.3, edgecolor='black', s=300, c='blue')
-
-    #     x = [x for x in range(result_cnt)]
-    #     y = self.outputs[:result_cnt]
-    #     ax.scatter(x, y, label='actual', alpha=0.8, edgecolor='black', s=50, c='red')
-
-    #     ax.legend()
-    #     ax.grid(True)
-
-    #     return plt
+        x = [x for x in range(len(pred))]   
+        ax.scatter(x, pred, label='model', alpha=0.3, edgecolor='black', s=300, c='blue')
+        ax.scatter(x, act, label='actual', alpha=0.8, edgecolor='black', s=50, c='red')
+        
+        return plt
 
 
     def __iter__(self):
