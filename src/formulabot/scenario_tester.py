@@ -17,7 +17,7 @@ def main():
 
     source_data_path = r"C:\Users\markr\Projects\Software\FormulaBot\data\hypotenuse_01.csv"
     results_path = r"C:\Users\markr\Projects\Software\FormulaBot\data\hypotenuse_01_results.csv"
-    scenarios_to_run = 2
+    scenarios_to_run = 25
 
     df = pd.read_csv(source_data_path)
     X = df[['X','Y']].to_dict(orient='records')
